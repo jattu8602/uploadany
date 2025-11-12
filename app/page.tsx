@@ -8,6 +8,7 @@ import {
   removeTextBox,
   updateTextBox,
   setPrivacy,
+  setWantsLifetimeAccess,
   setCaptchaVerified,
   setUploading,
   setUploadError,
@@ -33,7 +34,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Plus, Loader2, Lock } from 'lucide-react'
+import { Plus, Loader2, Lock, Infinity } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -157,8 +158,9 @@ export default function Home() {
       // Show QR code
       setShowQR(true)
 
-      // If private, show payment prompt
-      if (result.requiresPayment) {
+      // If private or lifetime access requested, show payment prompt
+      if (result.requiresPayment || uploadState.wantsLifetimeAccess) {
+        setCurrentUploadIdState(uploadId)
         setShowPayment(true)
       }
     } catch (error: any) {
@@ -268,6 +270,36 @@ export default function Home() {
                 />
               </div>
             )}
+
+            {/* Lifetime Access Toggle */}
+            <div className="pt-4 border-t-2 border-white/20">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex-1">
+                  <Label className="text-base font-semibold text-foreground mb-2 block">
+                    Lifetime Access
+                  </Label>
+                  <p className="text-sm text-muted-foreground font-medium">
+                    Make this file publicly available lifetime in just 2 rupees pay now and get unlimited download access
+                  </p>
+                </div>
+                <Button
+                  onClick={() => {
+                    const newValue = !uploadState.wantsLifetimeAccess
+                    dispatch(setWantsLifetimeAccess(newValue))
+                    // Payment will be shown after upload completes
+                  }}
+                  className={`flex-shrink-0 ${
+                    uploadState.wantsLifetimeAccess
+                      ? 'bg-gradient-success hover:opacity-90 text-white'
+                      : 'bg-white/50 border-2 border-white/30 hover:bg-white/70 text-foreground'
+                  } font-semibold shadow-glow transition-all duration-300`}
+                  variant={uploadState.wantsLifetimeAccess ? 'default' : 'outline'}
+                >
+                  <Infinity className="h-4 w-4 mr-2" />
+                  {uploadState.wantsLifetimeAccess ? 'Enabled' : 'Enable'}
+                </Button>
+              </div>
+            </div>
           </div>
         </Card>
 
@@ -351,9 +383,13 @@ export default function Home() {
       <Dialog open={showPayment} onOpenChange={setShowPayment}>
         <DialogContent className="glass-card border-2 border-white/30 shadow-colorful">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold text-gradient-secondary">Payment Required</DialogTitle>
+            <DialogTitle className="text-2xl font-bold text-gradient-secondary">
+              {uploadState.wantsLifetimeAccess ? 'Lifetime Access Payment' : 'Payment Required'}
+            </DialogTitle>
             <DialogDescription className="text-base font-medium text-foreground/80">
-              Private uploads require a one-time payment of ₹2
+              {uploadState.wantsLifetimeAccess
+                ? 'Pay ₹2 to make this upload publicly available for lifetime with unlimited download access'
+                : 'Private uploads require a one-time payment of ₹2'}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
@@ -362,24 +398,29 @@ export default function Home() {
                 uploadId={currentUploadId}
                 onSuccess={() => {
                   setShowPayment(false)
+                  dispatch(setWantsLifetimeAccess(false))
                   // Refresh history
                   window.location.reload()
                 }}
                 onCancel={() => {
-                  // This shouldn't happen for existing uploads, but handle it
+                  if (uploadState.wantsLifetimeAccess) {
+                    dispatch(setWantsLifetimeAccess(false))
+                  }
                   setShowPayment(false)
                 }}
               />
             ) : (
               <div className="space-y-4">
                 <p className="text-sm text-muted-foreground font-medium">
-                  To make your upload private and password-protected, you need to pay ₹2. This is a one-time payment for lifetime access.
+                  {uploadState.wantsLifetimeAccess
+                    ? 'Make this file publicly available lifetime in just 2 rupees pay now and get unlimited download access. Payment will be processed after upload completes.'
+                    : 'To make your upload private and password-protected, you need to pay ₹2. This is a one-time payment for lifetime access.'}
                 </p>
                 <div className="flex gap-3">
                   <Button
                     onClick={() => {
                       setShowPayment(false)
-                      // User can continue with private upload - payment will be handled after upload
+                      // User can continue - payment will be handled after upload
                     }}
                     className="flex-1 bg-gradient-primary hover:opacity-90 text-white font-bold text-lg py-6 shadow-glow hover:shadow-colorful transition-all duration-300"
                   >
@@ -387,14 +428,17 @@ export default function Home() {
                   </Button>
                   <Button
                     onClick={() => {
-                      // Change back to public and close dialog
-                      dispatch(setPrivacy({ isPrivate: false, password: '' }))
+                      if (uploadState.wantsLifetimeAccess) {
+                        dispatch(setWantsLifetimeAccess(false))
+                      } else {
+                        dispatch(setPrivacy({ isPrivate: false, password: '' }))
+                      }
                       setShowPayment(false)
                     }}
                     variant="outline"
                     className="flex-1 bg-white/50 border-2 border-white/30 hover:bg-white/70 text-foreground font-bold text-lg py-6 transition-all duration-300"
                   >
-                    Back to Public Upload
+                    Cancel
                   </Button>
                 </div>
               </div>

@@ -7,8 +7,9 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Trash2, ExternalLink, Loader2, Smartphone, Sparkles } from 'lucide-react'
+import { Trash2, ExternalLink, Loader2, Smartphone, Sparkles, Infinity } from 'lucide-react'
 import QRCode from './QRCode'
+import PaymentPrompt from './PaymentPrompt'
 import {
   Dialog,
   DialogContent,
@@ -24,6 +25,7 @@ export default function UploadHistory() {
   const deviceId = useAppSelector((state) => state.device.deviceId)
   const deviceName = useAppSelector((state) => state.device.deviceName)
   const [selectedQR, setSelectedQR] = useState<string | null>(null)
+  const [upgradeUploadId, setUpgradeUploadId] = useState<string | null>(null)
 
   useEffect(() => {
     if (deviceId) {
@@ -177,6 +179,16 @@ export default function UploadHistory() {
                 </div>
               </div>
               <div className="flex flex-col gap-2">
+                {!item.isPaid && (
+                  <Button
+                    onClick={() => setUpgradeUploadId(item.uploadId)}
+                    className="bg-gradient-success hover:opacity-90 text-white font-bold shadow-glow hover:shadow-colorful transition-all duration-300"
+                    size="sm"
+                  >
+                    <Infinity className="h-4 w-4 mr-2" />
+                    Upgrade to Lifetime
+                  </Button>
+                )}
                 <Button
                   onClick={() => setSelectedQR(item.uploadId)}
                   className="bg-gradient-accent hover:opacity-90 text-white font-semibold shadow-glow hover:shadow-colorful transition-all duration-300"
@@ -213,6 +225,31 @@ export default function UploadHistory() {
             <QRCode
               url={`${process.env.NEXT_PUBLIC_APP_URL || window.location.origin}/view/${selectedQR}`}
               uploadId={selectedQR}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Upgrade to Lifetime Dialog */}
+      <Dialog open={upgradeUploadId !== null} onOpenChange={() => setUpgradeUploadId(null)}>
+        <DialogContent className="glass-card border-2 border-white/30 shadow-colorful">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-gradient-success">Upgrade to Lifetime Access</DialogTitle>
+            <DialogDescription className="text-base font-medium text-foreground/80">
+              Make this file publicly available lifetime in just 2 rupees pay now and get unlimited download access
+            </DialogDescription>
+          </DialogHeader>
+          {upgradeUploadId && (
+            <PaymentPrompt
+              uploadId={upgradeUploadId}
+              onSuccess={() => {
+                setUpgradeUploadId(null)
+                // Refresh history
+                fetchHistory()
+              }}
+              onCancel={() => {
+                setUpgradeUploadId(null)
+              }}
             />
           )}
         </DialogContent>

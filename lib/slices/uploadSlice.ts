@@ -22,6 +22,7 @@ interface UploadState {
   textBoxes: TextBox[]
   isPrivate: boolean
   password: string
+  wantsLifetimeAccess: boolean
   captchaVerified: boolean
   captchaToken: string | null
   isUploading: boolean
@@ -34,6 +35,7 @@ const initialState: UploadState = {
   textBoxes: [],
   isPrivate: false,
   password: '',
+  wantsLifetimeAccess: false,
   captchaVerified: false,
   captchaToken: null,
   isUploading: false,
@@ -112,6 +114,9 @@ const uploadSlice = createSlice({
         state.password = action.payload.password
       }
     },
+    setWantsLifetimeAccess: (state, action: PayloadAction<boolean>) => {
+      state.wantsLifetimeAccess = action.payload
+    },
     setCaptchaVerified: (
       state,
       action: PayloadAction<{ verified: boolean; token: string | null }>
@@ -133,6 +138,7 @@ const uploadSlice = createSlice({
       state.textBoxes = []
       state.isPrivate = false
       state.password = ''
+      state.wantsLifetimeAccess = false
       state.captchaVerified = false
       state.captchaToken = null
       state.isUploading = false
@@ -151,6 +157,7 @@ export const {
   removeTextBox,
   updateTextBox,
   setPrivacy,
+  setWantsLifetimeAccess,
   setCaptchaVerified,
   setUploading,
   setUploadError,

@@ -158,6 +158,7 @@ export async function POST(request: NextRequest) {
     }
 
     // If private, create payment record
+    // Note: Lifetime access payment can be created later via payment API
     if (validated.isPrivate) {
       await prisma.payment.create({
         data: {
@@ -179,7 +180,7 @@ export async function POST(request: NextRequest) {
     console.error('Upload error:', error)
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Invalid request data', details: error.errors },
+        { error: 'Invalid request data', details: error.issues },
         { status: 400 }
       )
     }
