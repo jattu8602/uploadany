@@ -1,65 +1,407 @@
-import Image from "next/image";
+'use client'
+
+import { useEffect, useState } from 'react'
+import { useAppDispatch, useAppSelector } from '@/lib/hooks'
+import { initializeDevice } from '@/lib/device'
+import {
+  addTextBox,
+  removeTextBox,
+  updateTextBox,
+  setPrivacy,
+  setCaptchaVerified,
+  setUploading,
+  setUploadError,
+  setCurrentUploadId,
+  resetUpload,
+} from '@/lib/slices/uploadSlice'
+import { addHistoryItem } from '@/lib/slices/historySlice'
+import FileUploadZone from '@/components/FileUploadZone'
+import TextEditor from '@/components/TextEditor'
+import Captcha from '@/components/Captcha'
+import QRCode from '@/components/QRCode'
+import UploadHistory from '@/components/UploadHistory'
+import PaymentPrompt from '@/components/PaymentPrompt'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Plus, Loader2, Lock } from 'lucide-react'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { nanoid } from 'nanoid'
 
 export default function Home() {
+  const dispatch = useAppDispatch()
+  const deviceId = useAppSelector((state) => state.device.deviceId)
+  const uploadState = useAppSelector((state) => state.upload)
+  const [showQR, setShowQR] = useState(false)
+  const [showPayment, setShowPayment] = useState(false)
+  const [currentUploadId, setCurrentUploadIdState] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      initializeDevice(dispatch)
+    }
+  }, [dispatch])
+
+  const handleAddTextBox = () => {
+    const id = nanoid()
+    dispatch(addTextBox({ id, title: `Text ${uploadState.textBoxes.length + 1}` }))
+  }
+
+  const handlePrivacyChange = (value: string) => {
+    const isPrivate = value === 'private'
+    dispatch(setPrivacy({ isPrivate, password: '' }))
+
+    if (isPrivate) {
+      // Don't set currentUploadId here - payment will be shown before upload
+      setShowPayment(true)
+    }
+  }
+
+  const handleCaptchaVerify = (token: string) => {
+    dispatch(setCaptchaVerified({ verified: true, token }))
+  }
+
+  const handleUpload = async () => {
+    if (uploadState.files.length === 0 && uploadState.textBoxes.length === 0) {
+      dispatch(setUploadError('Please add at least one file or text box'))
+      return
+    }
+
+    if (!uploadState.captchaVerified) {
+      dispatch(setUploadError('Please complete CAPTCHA verification'))
+      return
+    }
+
+    if (!deviceId) {
+      dispatch(setUploadError('Device ID not initialized'))
+      return
+    }
+
+    dispatch(setUploading(true))
+    dispatch(setUploadError(null))
+
+    try {
+      // Prepare form data
+      const formData = new FormData()
+
+      // Add files
+      uploadState.files.forEach((fileItem, index) => {
+        formData.append(`file_${index}`, fileItem.file)
+      })
+
+      // Add metadata
+      const metadata = {
+        deviceId,
+        captchaToken: uploadState.captchaToken,
+        isPrivate: uploadState.isPrivate,
+        password: uploadState.isPrivate ? uploadState.password : undefined,
+        textBoxes: uploadState.textBoxes.map((tb) => ({
+          id: tb.id,
+          title: tb.title,
+          content: tb.content,
+        })),
+      }
+      formData.append('metadata', JSON.stringify(metadata))
+
+      // Upload
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Upload failed')
+      }
+
+      // Success
+      const uploadId = result.uploadId
+      setCurrentUploadIdState(uploadId)
+      dispatch(setCurrentUploadId(uploadId))
+
+      // Add to history
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || window.location.origin
+      dispatch(
+        addHistoryItem({
+          uploadId,
+          deviceId,
+          fileCount: uploadState.files.length,
+          textBoxCount: uploadState.textBoxes.length,
+          isPrivate: uploadState.isPrivate,
+          isPaid: false,
+          expiresAt: result.expiresAt,
+          createdAt: new Date().toISOString(),
+          qrCodeUrl: `${baseUrl}/view/${uploadId}`,
+        })
+      )
+
+      // Clear form for better UX - user can start new upload immediately
+      dispatch(resetUpload())
+
+      // Show QR code
+      setShowQR(true)
+
+      // If private, show payment prompt
+      if (result.requiresPayment) {
+        setShowPayment(true)
+      }
+    } catch (error: any) {
+      dispatch(setUploadError(error.message || 'Upload failed'))
+    } finally {
+      dispatch(setUploading(false))
+    }
+  }
+
+  const handleCloseQR = () => {
+    setShowQR(false)
+    dispatch(resetUpload())
+    setCurrentUploadIdState(null)
+  }
+
+  const canUpload =
+    (uploadState.files.length > 0 || uploadState.textBoxes.length > 0) &&
+    uploadState.captchaVerified &&
+    !uploadState.isUploading
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <div className="container mx-auto p-4 max-w-4xl space-y-8">
+      <div className="text-center space-y-4 py-8">
+        <h1 className="text-6xl pacifico-regular text-white drop-shadow-2xl">
+          Upload Anytime
+        </h1>
+        <p className="text-xl text-white/95 font-semibold drop-shadow-lg">
+          Upload anything, share via QR code. No login required.
+        </p>
+      </div>
+
+      {/* File Upload Zone */}
+      <Card className="glass-card p-6 shadow-colorful border-2 border-white/20">
+        <h2 className="text-2xl font-bold mb-4 text-gradient-primary">Files</h2>
+        <FileUploadZone />
+      </Card>
+
+      {/* Text Boxes */}
+      <Card className="glass-card p-6 shadow-colorful border-2 border-white/20">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-2xl font-bold text-gradient-secondary">Text Content</h2>
+          <Button
+            onClick={handleAddTextBox}
+            className="bg-gradient-secondary hover:opacity-90 text-white font-semibold shadow-glow hover:shadow-colorful transition-all duration-300"
+            size="sm"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+            <Plus className="h-4 w-4 mr-2" />
+            Add Text Box
+          </Button>
+        </div>
+        <div className="space-y-4">
+          {uploadState.textBoxes.map((textBox) => (
+            <TextEditor
+              key={textBox.id}
+              id={textBox.id}
+              title={textBox.title}
+              content={textBox.content}
+              onTitleChange={(id, title) =>
+                dispatch(updateTextBox({ id, title }))
+              }
+              onContentChange={(id, content) =>
+                dispatch(updateTextBox({ id, content }))
+              }
+              onRemove={(id) => dispatch(removeTextBox(id))}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+          ))}
+          {uploadState.textBoxes.length === 0 && (
+            <p className="text-sm text-muted-foreground text-center py-8">
+              No text boxes added. Click &quot;Add Text Box&quot; to get started.
+            </p>
+          )}
         </div>
-      </main>
+      </Card>
+
+        {/* Privacy Settings */}
+        <Card className="glass-card p-6 shadow-colorful border-2 border-white/20">
+          <h2 className="text-2xl font-bold mb-6 text-gradient-secondary">Privacy Settings</h2>
+          <div className="space-y-5">
+            <div>
+              <Label className="text-base font-semibold text-foreground mb-2 block">Access Control</Label>
+              <Select
+                value={uploadState.isPrivate ? 'private' : 'public'}
+                onValueChange={handlePrivacyChange}
+              >
+                <SelectTrigger className="bg-white/50 border-2 border-white/30 focus:border-primary focus:ring-2 focus:ring-primary/20 h-12 text-base">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="glass-card border-2 border-white/30 shadow-colorful">
+                  <SelectItem value="public" className="text-base py-3">Public (Anyone with QR can access)</SelectItem>
+                  <SelectItem value="private" className="text-base py-3">
+                    Private (Password protected - ₹2 required)
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            {uploadState.isPrivate && (
+              <div>
+                <Label className="text-base font-semibold text-foreground mb-2 block">Password</Label>
+                <Input
+                  type="password"
+                  placeholder="Enter password"
+                  value={uploadState.password}
+                  onChange={(e) =>
+                    dispatch(setPrivacy({ isPrivate: true, password: e.target.value }))
+                  }
+                  className="bg-white/50 border-2 border-white/30 focus:border-primary focus:ring-2 focus:ring-primary/20 h-12 text-base"
+                />
+              </div>
+            )}
+          </div>
+        </Card>
+
+      {/* CAPTCHA */}
+      {(uploadState.files.length > 0 || uploadState.textBoxes.length > 0) && (
+        <Card className="glass-card p-6 shadow-colorful border-2 border-white/20">
+          <h2 className="text-2xl font-bold mb-4 text-gradient-accent">Verification</h2>
+          <Captcha
+            onVerify={handleCaptchaVerify}
+            verified={uploadState.captchaVerified}
+            error={uploadState.uploadError}
+          />
+        </Card>
+      )}
+
+      {/* Upload Button */}
+      <div className="flex justify-center">
+        <Button
+          onClick={handleUpload}
+          disabled={!canUpload}
+          size="lg"
+          className="w-full max-w-md bg-gradient-primary hover:opacity-90 text-white font-bold text-lg py-6 shadow-glow hover:shadow-colorful transition-all duration-300 disabled:opacity-50"
+        >
+          {uploadState.isUploading ? (
+            <>
+              <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+              Uploading...
+            </>
+          ) : (
+            'Upload & Generate QR Code'
+          )}
+        </Button>
+      </div>
+
+      {uploadState.uploadError && (
+        <Alert variant="destructive">
+          <AlertDescription>{uploadState.uploadError}</AlertDescription>
+        </Alert>
+      )}
+
+      {/* Upload History */}
+      <Card className="glass-card p-6 shadow-colorful border-2 border-white/20">
+        <UploadHistory />
+      </Card>
+
+      {/* QR Code Dialog */}
+      <Dialog open={showQR} onOpenChange={setShowQR}>
+        <DialogContent className="max-w-md glass-card border-2 border-white/30 shadow-colorful">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-gradient-primary">Upload Complete!</DialogTitle>
+            <DialogDescription className="text-base font-medium text-foreground/80">
+              Scan this QR code to access your upload
+            </DialogDescription>
+          </DialogHeader>
+          {currentUploadId && (
+            <div className="space-y-6">
+              <QRCode
+                url={`${process.env.NEXT_PUBLIC_APP_URL || window.location.origin}/view/${currentUploadId}`}
+                uploadId={currentUploadId}
+              />
+              {uploadState.isPrivate && (
+                <Alert className="glass-card border-2 border-warning/50 bg-warning/10">
+                  <Lock className="h-4 w-4 text-warning" />
+                  <AlertDescription className="font-semibold text-foreground">
+                    This upload is password protected. Payment required.
+                  </AlertDescription>
+                </Alert>
+              )}
+              <Button
+                onClick={handleCloseQR}
+                className="w-full bg-gradient-primary hover:opacity-90 text-white font-bold text-lg py-6 shadow-glow hover:shadow-colorful transition-all duration-300"
+              >
+                Done
+              </Button>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Payment Dialog */}
+      <Dialog open={showPayment} onOpenChange={setShowPayment}>
+        <DialogContent className="glass-card border-2 border-white/30 shadow-colorful">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-gradient-secondary">Payment Required</DialogTitle>
+            <DialogDescription className="text-base font-medium text-foreground/80">
+              Private uploads require a one-time payment of ₹2
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            {currentUploadId ? (
+              <PaymentPrompt
+                uploadId={currentUploadId}
+                onSuccess={() => {
+                  setShowPayment(false)
+                  // Refresh history
+                  window.location.reload()
+                }}
+                onCancel={() => {
+                  // This shouldn't happen for existing uploads, but handle it
+                  setShowPayment(false)
+                }}
+              />
+            ) : (
+              <div className="space-y-4">
+                <p className="text-sm text-muted-foreground font-medium">
+                  To make your upload private and password-protected, you need to pay ₹2. This is a one-time payment for lifetime access.
+                </p>
+                <div className="flex gap-3">
+                  <Button
+                    onClick={() => {
+                      setShowPayment(false)
+                      // User can continue with private upload - payment will be handled after upload
+                    }}
+                    className="flex-1 bg-gradient-primary hover:opacity-90 text-white font-bold text-lg py-6 shadow-glow hover:shadow-colorful transition-all duration-300"
+                  >
+                    Continue
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      // Change back to public and close dialog
+                      dispatch(setPrivacy({ isPrivate: false, password: '' }))
+                      setShowPayment(false)
+                    }}
+                    variant="outline"
+                    className="flex-1 bg-white/50 border-2 border-white/30 hover:bg-white/70 text-foreground font-bold text-lg py-6 transition-all duration-300"
+                  >
+                    Back to Public Upload
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
-  );
+  )
 }

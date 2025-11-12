@@ -1,0 +1,79 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Upload {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  uploadId  String   @unique
+  deviceId  String
+  isPrivate Boolean  @default(false)
+  password  String?
+  isPaid    Boolean  @default(false)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  files       File[]
+  textContent TextContent[]
+  payment     Payment?
+
+  @@index([deviceId])
+  @@index([expiresAt])
+  @@map("uploads")
+}
+
+model File {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  uploadId       String
+  name           String
+  originalName   String
+  url            String
+  storageProvider String // "cloudinary" or "r2"
+  size           Int      // File size in bytes
+  mimeType       String
+  type           String   // "image", "video", "document", "executable", "other"
+  createdAt      DateTime @default(now())
+
+  upload Upload @relation(fields: [uploadId], references: [id], onDelete: Cascade)
+
+  @@index([uploadId])
+  @@map("files")
+}
+
+model TextContent {
+  id       String   @id @default(auto()) @map("_id") @db.ObjectId
+  uploadId String
+  title    String
+  content  String   // Rich text HTML/JSON from TipTap
+  order    Int      // Display order
+  createdAt DateTime @default(now())
+
+  upload Upload @relation(fields: [uploadId], references: [id], onDelete: Cascade)
+
+  @@index([uploadId])
+  @@map("text_content")
+}
+
+model Payment {
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  uploadId         String   @unique
+  razorpayOrderId  String
+  razorpayPaymentId String?
+  amount           Int      // Amount in paise (200 = ₹2)
+  status           String   // "pending", "completed", "failed"
+  createdAt        DateTime @default(now())
+
+  upload Upload @relation(fields: [uploadId], references: [id], onDelete: Cascade)
+
+  @@index([razorpayOrderId])
+  @@map("payments")
+}
