@@ -1,9 +1,11 @@
 'use client'
 
+import { useState } from 'react'
 import { QRCodeSVG } from 'qrcode.react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Download } from 'lucide-react'
+import { Input } from '@/components/ui/input'
+import { Download, Copy, Check } from 'lucide-react'
 
 interface QRCodeProps {
   url: string
@@ -11,6 +13,18 @@ interface QRCodeProps {
 }
 
 export default function QRCode({ url, uploadId }: QRCodeProps) {
+  const [copied, setCopied] = useState(false)
+
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(url)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch (err) {
+      console.error('Failed to copy:', err)
+    }
+  }
+
   const downloadQR = () => {
     const svg = document.getElementById('qr-code-svg')
     if (!svg) return
@@ -48,11 +62,32 @@ export default function QRCode({ url, uploadId }: QRCodeProps) {
           />
         </div>
       </div>
-      <div className="text-center space-y-3">
+      <div className="text-center space-y-3 w-full">
         <p className="text-lg font-bold text-gradient-primary">Scan to view files</p>
-        <p className="text-xs font-mono break-all bg-white/10 p-2 rounded border border-white/20 text-foreground">
-          {url}
-        </p>
+        <div className="flex items-center gap-2 w-full">
+          <Input
+            value={url}
+            readOnly
+            className="flex-1 bg-white/50 border-2 border-white/30 text-xs font-mono text-center"
+          />
+          <Button
+            onClick={copyLink}
+            className="bg-gradient-primary hover:opacity-90 text-white font-semibold shadow-glow flex-shrink-0"
+            size="sm"
+          >
+            {copied ? (
+              <>
+                <Check className="h-4 w-4 mr-2" />
+                Copied!
+              </>
+            ) : (
+              <>
+                <Copy className="h-4 w-4 mr-2" />
+                Copy
+              </>
+            )}
+          </Button>
+        </div>
       </div>
       <Button
         onClick={downloadQR}

@@ -31,16 +31,43 @@ export async function GET(request: NextRequest) {
       isPaid: upload.isPaid,
       expiresAt: upload.expiresAt.toISOString(),
       createdAt: upload.createdAt.toISOString(),
-      qrCodeUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/view/${upload.uploadId}`,
+      qrCodeUrl: `${
+        process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+      }/view/${upload.uploadId}`,
     }))
 
     return NextResponse.json({ history })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Get history error:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    // Provide more specific error message
+    const errorMessage = error?.message || 'Internal server error'
+    // Check if it's a database connection error
+    if (
+      errorMessage.includes('connect') ||
+      errorMessage.includes('ECONNREFUSED') ||
+      errorMessage.includes('MongoNetworkError')
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            'Database connection failed. Please check your database configuration.',
+        },
+        { status: 500 }
+      )
+    }
+    // Check if Prisma client is not generated
+    if (
+      errorMessage.includes('PrismaClient') ||
+      errorMessage.includes('Cannot find module')
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            'Database client not initialized. Please run: npx prisma generate',
+        },
+        { status: 500 }
+      )
+    }
+    return NextResponse.json({ error: errorMessage }, { status: 500 })
   }
 }
-

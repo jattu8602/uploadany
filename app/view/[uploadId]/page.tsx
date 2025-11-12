@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -17,6 +18,9 @@ import {
   Copy,
   Share2,
   Check,
+  ArrowLeft,
+  Home,
+  Upload,
 } from 'lucide-react'
 import PaymentPrompt from '@/components/PaymentPrompt'
 import QRCode from '@/components/QRCode'
@@ -53,6 +57,7 @@ interface UploadData {
 
 export default function ViewPage() {
   const params = useParams()
+  const router = useRouter()
   const uploadId = params.uploadId as string
   const [data, setData] = useState<UploadData | null>(null)
   const [loading, setLoading] = useState(true)
@@ -200,7 +205,23 @@ export default function ViewPage() {
   if (error) {
     return (
       <div className="container mx-auto p-4 min-h-screen flex items-center justify-center">
-        <div className="w-full max-w-md">
+        <div className="w-full max-w-md space-y-4">
+          <div className="flex items-center justify-center gap-4">
+            <Button
+              onClick={() => router.push('/')}
+              className="bg-gradient-primary hover:opacity-90 text-white font-semibold shadow-glow hover:shadow-colorful transition-all duration-300"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Upload File
+            </Button>
+            <Button
+              onClick={() => router.push('/')}
+              className="bg-gradient-accent hover:opacity-90 text-white font-semibold shadow-glow hover:shadow-colorful transition-all duration-300"
+            >
+              <Home className="h-4 w-4 mr-2" />
+              Home
+            </Button>
+          </div>
           <Card className="glass-card p-8 border-2 border-destructive/50 shadow-colorful">
             <Alert
               variant="destructive"
@@ -219,7 +240,23 @@ export default function ViewPage() {
   if (!data) {
     return (
       <div className="container mx-auto p-4 min-h-screen flex items-center justify-center">
-        <div className="w-full max-w-md">
+        <div className="w-full max-w-md space-y-4">
+          <div className="flex items-center justify-center gap-4">
+            <Button
+              onClick={() => router.push('/')}
+              className="bg-gradient-primary hover:opacity-90 text-white font-semibold shadow-glow hover:shadow-colorful transition-all duration-300"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Upload File
+            </Button>
+            <Button
+              onClick={() => router.push('/')}
+              className="bg-gradient-accent hover:opacity-90 text-white font-semibold shadow-glow hover:shadow-colorful transition-all duration-300"
+            >
+              <Home className="h-4 w-4 mr-2" />
+              Home
+            </Button>
+          </div>
           <Card className="glass-card p-8 border-2 border-white/30 shadow-colorful">
             <Alert className="border-2 border-warning/50 bg-warning/10">
               <AlertDescription className="font-semibold text-foreground text-lg">
@@ -238,7 +275,23 @@ export default function ViewPage() {
   if (upload.isPrivate && !passwordVerified) {
     return (
       <div className="container mx-auto p-4 min-h-screen flex items-center justify-center">
-        <div className="w-full max-w-md">
+        <div className="w-full max-w-md space-y-4">
+          <div className="flex items-center justify-center gap-4">
+            <Button
+              onClick={() => router.push('/')}
+              className="bg-gradient-primary hover:opacity-90 text-white font-semibold shadow-glow hover:shadow-colorful transition-all duration-300"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Upload File
+            </Button>
+            <Button
+              onClick={() => router.push('/')}
+              className="bg-gradient-accent hover:opacity-90 text-white font-semibold shadow-glow hover:shadow-colorful transition-all duration-300"
+            >
+              <Home className="h-4 w-4 mr-2" />
+              Home
+            </Button>
+          </div>
           <div className="text-center mb-8">
             <h1 className="text-5xl font-bold pacifico-regular text-white drop-shadow-2xl mb-4">
               Upload Anytime
@@ -337,11 +390,31 @@ export default function ViewPage() {
 
   return (
     <div className="container mx-auto p-4 max-w-4xl space-y-6">
+      {/* Back Button at Top */}
+      <div className="flex items-center justify-between py-4">
+        <Button
+          onClick={() => router.push('/')}
+          className="bg-gradient-primary hover:opacity-90 text-white font-semibold shadow-glow hover:shadow-colorful transition-all duration-300"
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Upload File
+        </Button>
+        <Button
+          onClick={() => router.push('/')}
+          className="bg-gradient-accent hover:opacity-90 text-white font-semibold shadow-glow hover:shadow-colorful transition-all duration-300"
+        >
+          <Home className="h-4 w-4 mr-2" />
+          Home
+        </Button>
+      </div>
+
       <div className="flex items-center justify-between py-6 flex-wrap gap-4">
         <div>
-          <h1 className="text-5xl font-bold pacifico-regular text-white drop-shadow-2xl mb-2">
-            Upload Files
-          </h1>
+          <Link href="/">
+            <h1 className="text-5xl font-bold pacifico-regular text-white drop-shadow-2xl mb-2 hover:opacity-80 transition-opacity cursor-pointer">
+              Upload Files
+            </h1>
+          </Link>
           {files.length > 0 && (
             <p className="text-lg text-white/90 font-semibold">
               Files ({files.length})
