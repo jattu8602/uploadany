@@ -75,8 +75,8 @@ export default function TermsAndConditionsPage() {
           Know your responsibilities while using Upload Anytime.
         </h1>
         <p className="text-base text-white/80 md:text-lg">
-          These terms outline how Upload Anytime operates, what you can expect from us, and how to
-          keep your account secure and compliant.
+          These terms outline how Upload Anytime operates, what you can expect
+          from us, and how to keep your account secure and compliant.
         </p>
       </header>
 
@@ -86,17 +86,17 @@ export default function TermsAndConditionsPage() {
             key={section.title}
             className="glass-card rounded-2xl border border-white/20 p-6 shadow-colorful"
           >
-            <h2 className="text-xl font-semibold text-gradient-primary md:text-2xl">
+            <h2 className="text-xl font-semibold text-black md:text-2xl">
               {section.title}
             </h2>
-            <p className="mt-3 text-sm leading-relaxed text-white/90 md:text-base">
+            <p className="mt-3 text-sm leading-relaxed text-black md:text-base">
               {section.description}
             </p>
             {section.bullets && (
-              <ul className="mt-4 space-y-2 text-sm text-white/80 md:text-base">
+              <ul className="mt-4 space-y-2 text-sm text-black md:text-base">
                 {section.bullets.map((bullet) => (
                   <li key={bullet} className="flex gap-2">
-                    <span className="mt-1 h-2 w-2 flex-shrink-0 rounded-full bg-gradient-primary" />
+                    <span className="mt-1 h-2 w-2 flex-shrink-0 rounded-full bg-black" />
                     <span>{bullet}</span>
                   </li>
                 ))}
@@ -107,14 +107,14 @@ export default function TermsAndConditionsPage() {
       </div>
 
       <div className="mt-12 glass-card rounded-2xl border border-white/20 p-6 shadow-colorful">
-        <h2 className="text-lg font-semibold text-gradient-secondary md:text-xl">
+        <h2 className="text-lg font-semibold text-black md:text-xl">
           Questions or clarifications?
         </h2>
-        <p className="mt-3 text-sm text-white/80 md:text-base">
-          We are here to help. If you need clarity on these terms, or if you believe someone is
-          misusing the platform, let us know right away.
+        <p className="mt-3 text-sm text-black md:text-base">
+          We are here to help. If you need clarity on these terms, or if you
+          believe someone is misusing the platform, let us know right away.
         </p>
-        <div className="mt-4 flex flex-col gap-4 text-sm text-white/80 md:flex-row md:text-base">
+        <div className="mt-4 flex flex-col gap-4 text-sm text-black md:flex-row md:text-base">
           <a
             href="tel:+918602074069"
             className="rounded-xl border border-white/20 bg-white/10 px-4 py-3 transition hover:border-white/40"
@@ -122,30 +122,33 @@ export default function TermsAndConditionsPage() {
             Call us: +91 8602074069
           </a>
           <div className="space-y-1 rounded-xl border border-white/20 bg-white/10 px-4 py-3">
-            <p className="font-medium text-white">Email support</p>
+            <p className="font-medium text-black">Email support</p>
             <a
               href="mailto:chaurasiyajatin68@gmail.com"
-              className="block break-all transition hover:text-white"
+              className="block break-all text-black transition hover:text-gray-700"
             >
               chaurasiyajatin68@gmail.com
             </a>
             <a
               href="mailto:chaurasiyanitesh68@gmail.com"
-              className="block break-all transition hover:text-white"
+              className="block break-all text-black transition hover:text-gray-700"
             >
               chaurasiyanitesh68@gmail.com
             </a>
           </div>
         </div>
-        <p className="mt-6 text-xs text-white/70">
+        <p className="mt-6 text-xs text-black">
           For policy-specific questions, you can also review our{' '}
-          <Link href="/shipping-policy" className="underline underline-offset-4 hover:text-white">
+          <Link
+            href="/shipping-policy"
+            className="underline underline-offset-4 text-black hover:text-gray-700"
+          >
             Shipping Policy
           </Link>{' '}
           and{' '}
           <Link
             href="/cancellation-and-refund"
-            className="underline underline-offset-4 hover:text-white"
+            className="underline underline-offset-4 text-black hover:text-gray-700"
           >
             Cancellation & Refund Policy
           </Link>
