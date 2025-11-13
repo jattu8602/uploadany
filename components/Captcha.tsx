@@ -60,8 +60,8 @@ export default function Captcha({ onVerify, verified, error }: CaptchaProps) {
   if (verified) {
     return (
       <Alert className="border-green-500 bg-green-50">
-        <CheckCircle2 className="h-4 w-4 text-green-600" />
-        <AlertDescription className="text-green-800">
+        <CheckCircle2 className="h-3 w-3 sm:h-4 sm:w-4 text-green-600" />
+        <AlertDescription className="text-xs sm:text-sm md:text-base text-green-800">
           CAPTCHA verified successfully
         </AlertDescription>
       </Alert>
@@ -71,8 +71,8 @@ export default function Captcha({ onVerify, verified, error }: CaptchaProps) {
   if (error || recaptchaError) {
     return (
       <Alert variant="destructive">
-        <AlertCircle className="h-4 w-4" />
-        <AlertDescription>{error || recaptchaError}</AlertDescription>
+        <AlertCircle className="h-3 w-3 sm:h-4 sm:w-4" />
+        <AlertDescription className="text-xs sm:text-sm md:text-base">{error || recaptchaError}</AlertDescription>
       </Alert>
     )
   }
@@ -80,16 +80,16 @@ export default function Captcha({ onVerify, verified, error }: CaptchaProps) {
   if (isInitializing) {
     return (
       <Alert>
-        <Loader2 className="h-4 w-4 animate-spin" />
-        <AlertDescription>Initializing CAPTCHA...</AlertDescription>
+        <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 animate-spin" />
+        <AlertDescription className="text-xs sm:text-sm md:text-base">Initializing CAPTCHA...</AlertDescription>
       </Alert>
     )
   }
 
   return (
     <Alert>
-      <Loader2 className="h-4 w-4 animate-spin" />
-      <AlertDescription>Verifying CAPTCHA...</AlertDescription>
+      <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 animate-spin" />
+      <AlertDescription className="text-xs sm:text-sm md:text-base">Verifying CAPTCHA...</AlertDescription>
     </Alert>
   )
 }

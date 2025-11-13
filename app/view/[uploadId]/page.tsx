@@ -389,34 +389,35 @@ export default function ViewPage() {
   }
 
   return (
-    <div className="container mx-auto p-4 max-w-4xl space-y-6">
+    <div className="container mx-auto p-2 sm:p-4 max-w-4xl space-y-3 sm:space-y-6">
       {/* Back Button at Top */}
-      <div className="flex items-center justify-between py-4">
+      <div className="flex items-center justify-between py-2 sm:py-4 gap-2">
         <Button
           onClick={() => router.push('/')}
-          className="bg-gradient-primary hover:opacity-90 text-white font-semibold shadow-glow hover:shadow-colorful transition-all duration-300"
+          className="bg-gradient-primary hover:opacity-90 text-white font-semibold shadow-glow hover:shadow-colorful transition-all duration-300 text-xs sm:text-sm"
         >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Upload File
+          <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+          <span className="hidden sm:inline">Upload File</span>
+          <span className="sm:hidden">Upload</span>
         </Button>
         <Button
           onClick={() => router.push('/')}
-          className="bg-gradient-accent hover:opacity-90 text-white font-semibold shadow-glow hover:shadow-colorful transition-all duration-300"
+          className="bg-gradient-accent hover:opacity-90 text-white font-semibold shadow-glow hover:shadow-colorful transition-all duration-300 text-xs sm:text-sm"
         >
-          <Home className="h-4 w-4 mr-2" />
+          <Home className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
           Home
         </Button>
       </div>
 
-      <div className="flex items-center justify-between py-6 flex-wrap gap-4">
+      <div className="flex items-center justify-between py-3 sm:py-6 flex-wrap gap-2 sm:gap-4">
         <div>
           <Link href="/">
-            <h1 className="text-5xl font-bold pacifico-regular text-white drop-shadow-2xl mb-2 hover:opacity-80 transition-opacity cursor-pointer">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold pacifico-regular text-white drop-shadow-2xl mb-1 sm:mb-2 hover:opacity-80 transition-opacity cursor-pointer">
               Upload Files
             </h1>
           </Link>
           {files.length > 0 && (
-            <p className="text-lg text-white/90 font-semibold">
+            <p className="text-sm sm:text-base md:text-lg text-white/90 font-semibold">
               Files ({files.length})
             </p>
           )}
@@ -424,10 +425,11 @@ export default function ViewPage() {
         {files.length > 0 && (
           <Button
             onClick={handleDownloadAll}
-            className="bg-gradient-accent hover:opacity-90 text-white font-bold text-lg px-6 py-6 shadow-glow hover:shadow-colorful transition-all duration-300"
+            className="bg-gradient-accent hover:opacity-90 text-white font-bold text-xs sm:text-sm md:text-lg px-3 sm:px-4 md:px-6 py-3 sm:py-4 md:py-6 shadow-glow hover:shadow-colorful transition-all duration-300"
           >
-            <Download className="h-5 w-5 mr-2" />
-            Download All as ZIP
+            <Download className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 mr-1 sm:mr-2" />
+            <span className="hidden sm:inline">Download All as ZIP</span>
+            <span className="sm:hidden">ZIP</span>
           </Button>
         )}
       </div>
@@ -451,43 +453,46 @@ export default function ViewPage() {
 
       {/* Files */}
       {files.length > 0 && (
-        <div className="space-y-4">
-          <div className="grid gap-4">
+        <div className="space-y-2 sm:space-y-4">
+          <div className="grid gap-2 sm:gap-4">
             {files.map((file) => (
               <Card
                 key={file.id}
-                className="glass-card p-5 border-2 border-white/20 shadow-colorful hover:border-white/40 transition-all duration-300 overflow-hidden"
+                className="glass-card p-3 sm:p-4 md:p-5 border-2 border-white/20 shadow-colorful hover:border-white/40 transition-all duration-300 overflow-hidden"
               >
-                <div className="flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-3 flex-1 min-w-0">
-                    <div className="p-3 rounded-lg bg-gradient-primary/20 flex-shrink-0">
-                      {getFileIcon(file.type)}
+                <div className="flex items-center justify-between gap-2 sm:gap-4">
+                  <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+                    <div className="p-2 sm:p-3 rounded-lg bg-gradient-primary/20 flex-shrink-0">
+                      <div className="h-4 w-4 sm:h-5 sm:w-5">
+                        {getFileIcon(file.type)}
+                      </div>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-foreground truncate">
+                      <p className="font-semibold text-xs sm:text-sm md:text-base text-foreground truncate">
                         {file.originalName}
                       </p>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-xs sm:text-sm text-muted-foreground">
                         {(file.size / 1024 / 1024).toFixed(2)} MB
                       </p>
                     </div>
                   </div>
-                  <div className="flex gap-2 items-center flex-shrink-0">
+                  <div className="flex gap-1 sm:gap-2 items-center flex-shrink-0">
                     {file.type === 'image' && (
                       <img
                         src={file.url}
                         alt={file.originalName}
-                        className="w-20 h-20 object-contain rounded-lg border-2 border-white/20 flex-shrink-0"
+                        className="hidden sm:block w-12 h-12 md:w-20 md:h-20 object-contain rounded-lg border-2 border-white/20 flex-shrink-0"
                       />
                     )}
                     <Button
                       onClick={() =>
                         handleDownload(file.url, file.originalName)
                       }
-                      className="bg-gradient-accent hover:opacity-90 text-white font-semibold shadow-glow hover:shadow-colorful transition-all duration-300 whitespace-nowrap flex-shrink-0"
+                      className="bg-gradient-accent hover:opacity-90 text-white font-semibold shadow-glow hover:shadow-colorful transition-all duration-300 whitespace-nowrap flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3 py-2 sm:py-3"
                     >
-                      <Download className="h-4 w-4 mr-2" />
-                      Download
+                      <Download className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                      <span className="hidden sm:inline">Download</span>
+                      <span className="sm:hidden">DL</span>
                     </Button>
                   </div>
                 </div>
@@ -499,21 +504,21 @@ export default function ViewPage() {
 
       {/* Text Content */}
       {textContent.length > 0 && (
-        <div className="space-y-4">
-          <h2 className="text-2xl font-bold text-gradient-secondary">
+        <div className="space-y-2 sm:space-y-4">
+          <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gradient-secondary">
             Text Content ({textContent.length})
           </h2>
-          <div className="space-y-4">
+          <div className="space-y-2 sm:space-y-4">
             {textContent.map((text) => (
               <Card
                 key={text.id}
-                className="glass-card p-6 border-2 border-white/20 shadow-colorful"
+                className="glass-card p-3 sm:p-4 md:p-6 border-2 border-white/20 shadow-colorful"
               >
-                <h3 className="font-bold text-xl mb-3 text-gradient-primary">
+                <h3 className="font-bold text-base sm:text-lg md:text-xl mb-2 sm:mb-3 text-gradient-primary">
                   {text.title}
                 </h3>
                 <div
-                  className="prose prose-sm max-w-none"
+                  className="prose prose-xs sm:prose-sm md:prose-base max-w-none text-xs sm:text-sm md:text-base"
                   dangerouslySetInnerHTML={{ __html: text.content }}
                 />
               </Card>
@@ -529,8 +534,8 @@ export default function ViewPage() {
       )}
 
       {/* QR Code and Share Section */}
-      <div className="mt-8 pt-8 border-t-2 border-white/20">
-        <div className="grid md:grid-cols-2 gap-6 items-start">
+      <div className="mt-4 sm:mt-8 pt-4 sm:pt-8 border-t-2 border-white/20">
+        <div className="grid md:grid-cols-2 gap-3 sm:gap-6 items-start">
           {/* QR Code - Desktop: Left, Mobile: Full width */}
           <div className="w-full">
             <QRCode
@@ -542,20 +547,20 @@ export default function ViewPage() {
           </div>
 
           {/* Share Section - Desktop: Right, Mobile: Below QR */}
-          <div className="space-y-4">
-            <h3 className="text-xl font-bold text-gradient-primary mb-4">
+          <div className="space-y-2 sm:space-y-4">
+            <h3 className="text-base sm:text-lg md:text-xl font-bold text-gradient-primary mb-2 sm:mb-4">
               Share this upload
             </h3>
 
             {/* Copyable Link */}
-            <Card className="glass-card p-4 border-2 border-white/20 shadow-colorful">
-              <div className="flex items-center gap-2">
+            <Card className="glass-card p-2 sm:p-3 md:p-4 border-2 border-white/20 shadow-colorful">
+              <div className="flex items-center gap-1 sm:gap-2">
                 <Input
                   value={`${
                     typeof window !== 'undefined' ? window.location.origin : ''
                   }/view/${uploadId}`}
                   readOnly
-                  className="flex-1 bg-white/50 border-2 border-white/30 text-sm font-mono"
+                  className="flex-1 bg-white/50 border-2 border-white/30 text-xs sm:text-sm font-mono"
                 />
                 <Button
                   onClick={async () => {
@@ -568,18 +573,18 @@ export default function ViewPage() {
                       console.error('Failed to copy:', err)
                     }
                   }}
-                  className="bg-gradient-primary hover:opacity-90 text-white font-semibold shadow-glow flex-shrink-0"
+                  className="bg-gradient-primary hover:opacity-90 text-white font-semibold shadow-glow flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3"
                   size="sm"
                 >
                   {copied ? (
                     <>
-                      <Check className="h-4 w-4 mr-2" />
-                      Copied!
+                      <Check className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                      <span className="hidden sm:inline">Copied!</span>
                     </>
                   ) : (
                     <>
-                      <Copy className="h-4 w-4 mr-2" />
-                      Copy
+                      <Copy className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                      <span className="hidden sm:inline">Copy</span>
                     </>
                   )}
                 </Button>
@@ -615,9 +620,9 @@ export default function ViewPage() {
                   }
                 }
               }}
-              className="w-full bg-gradient-secondary hover:opacity-90 text-white font-bold text-lg py-6 shadow-glow hover:shadow-colorful transition-all duration-300"
+              className="w-full bg-gradient-secondary hover:opacity-90 text-white font-bold text-sm sm:text-base md:text-lg py-3 sm:py-4 md:py-6 shadow-glow hover:shadow-colorful transition-all duration-300"
             >
-              <Share2 className="h-5 w-5 mr-2" />
+              <Share2 className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" />
               Share
             </Button>
 

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { QRCodeSVG } from 'qrcode.react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -14,6 +14,24 @@ interface QRCodeProps {
 
 export default function QRCode({ url, uploadId }: QRCodeProps) {
   const [copied, setCopied] = useState(false)
+  const [qrSize, setQrSize] = useState(256)
+
+  useEffect(() => {
+    const updateSize = () => {
+      if (typeof window !== 'undefined') {
+        if (window.innerWidth < 640) {
+          setQrSize(160)
+        } else if (window.innerWidth < 1024) {
+          setQrSize(200)
+        } else {
+          setQrSize(256)
+        }
+      }
+    }
+    updateSize()
+    window.addEventListener('resize', updateSize)
+    return () => window.removeEventListener('resize', updateSize)
+  }, [])
 
   const copyLink = async () => {
     try {
@@ -49,22 +67,22 @@ export default function QRCode({ url, uploadId }: QRCodeProps) {
   }
 
   return (
-    <Card className="glass-card p-8 flex flex-col items-center gap-6 border-2 border-white/20 shadow-colorful">
+    <Card className="glass-card p-3 sm:p-4 md:p-6 lg:p-8 flex flex-col items-center gap-3 sm:gap-4 md:gap-6 border-2 border-white/20 shadow-colorful">
       <div className="relative">
         <div className="absolute inset-0 bg-gradient-primary opacity-20 rounded-lg blur-xl" />
-        <div className="relative bg-white p-6 rounded-xl shadow-glow border-2 border-primary/20">
+        <div className="relative bg-white p-3 sm:p-4 md:p-6 rounded-xl shadow-glow border-2 border-primary/20">
           <QRCodeSVG
             id="qr-code-svg"
             value={url}
-            size={256}
+            size={qrSize}
             level="H"
             includeMargin={true}
           />
         </div>
       </div>
-      <div className="text-center space-y-3 w-full">
-        <p className="text-lg font-bold text-gradient-primary">Scan to view files</p>
-        <div className="flex items-center gap-2 w-full">
+      <div className="text-center space-y-2 sm:space-y-3 w-full">
+        <p className="text-sm sm:text-base md:text-lg font-bold text-gradient-primary">Scan to view files</p>
+        <div className="flex items-center gap-1 sm:gap-2 w-full">
           <Input
             value={url}
             readOnly
@@ -72,18 +90,18 @@ export default function QRCode({ url, uploadId }: QRCodeProps) {
           />
           <Button
             onClick={copyLink}
-            className="bg-gradient-primary hover:opacity-90 text-white font-semibold shadow-glow flex-shrink-0"
+            className="bg-gradient-primary hover:opacity-90 text-white font-semibold shadow-glow flex-shrink-0 text-xs sm:text-sm px-2 sm:px-3"
             size="sm"
           >
             {copied ? (
               <>
-                <Check className="h-4 w-4 mr-2" />
-                Copied!
+                <Check className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">Copied!</span>
               </>
             ) : (
               <>
-                <Copy className="h-4 w-4 mr-2" />
-                Copy
+                <Copy className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">Copy</span>
               </>
             )}
           </Button>
@@ -91,10 +109,11 @@ export default function QRCode({ url, uploadId }: QRCodeProps) {
       </div>
       <Button
         onClick={downloadQR}
-        className="bg-gradient-accent hover:opacity-90 text-white font-semibold shadow-glow hover:shadow-colorful transition-all duration-300"
+        className="bg-gradient-accent hover:opacity-90 text-white font-semibold shadow-glow hover:shadow-colorful transition-all duration-300 text-xs sm:text-sm md:text-base px-4 sm:px-6 py-2 sm:py-3"
       >
-        <Download className="h-4 w-4 mr-2" />
-        Download QR Code
+        <Download className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+        <span className="hidden sm:inline">Download QR Code</span>
+        <span className="sm:hidden">Download</span>
       </Button>
     </Card>
   )

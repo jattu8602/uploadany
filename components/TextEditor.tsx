@@ -41,56 +41,56 @@ export default function TextEditor({
     },
     editorProps: {
       attributes: {
-        class: 'prose prose-sm sm:prose-base lg:prose-lg xl:prose-2xl mx-auto focus:outline-none min-h-[200px] p-4',
+        class: 'prose prose-xs sm:prose-sm md:prose-base lg:prose-lg xl:prose-2xl mx-auto focus:outline-none min-h-[150px] sm:min-h-[200px] p-2 sm:p-3 md:p-4 text-xs sm:text-sm md:text-base',
       },
     },
   })
 
   if (!mounted) {
     return (
-      <Card className="p-4 space-y-3">
-        <div className="flex items-center gap-2">
+      <Card className="p-2 sm:p-3 md:p-4 space-y-2 sm:space-y-3">
+        <div className="flex items-center gap-1 sm:gap-2">
           <Input
             placeholder="Text box title..."
             value={title}
             onChange={(e) => onTitleChange(id, e.target.value)}
-            className="flex-1"
+            className="flex-1 text-xs sm:text-sm md:text-base h-8 sm:h-10"
           />
           <Button
             variant="ghost"
             size="icon"
             onClick={() => onRemove(id)}
-            className="text-destructive hover:text-destructive"
+            className="text-destructive hover:text-destructive h-8 w-8 sm:h-10 sm:w-10"
           >
-            <X className="h-4 w-4" />
+            <X className="h-3 w-3 sm:h-4 sm:w-4" />
           </Button>
         </div>
-        <div className="border rounded-md min-h-[200px] p-4">
-          <p className="text-muted-foreground">Loading editor...</p>
+        <div className="border rounded-md min-h-[150px] sm:min-h-[200px] p-2 sm:p-4">
+          <p className="text-muted-foreground text-xs sm:text-sm">Loading editor...</p>
         </div>
       </Card>
     )
   }
 
   return (
-    <Card className="glass-card p-5 space-y-4 border-2 border-white/20 shadow-colorful hover:border-white/40 transition-all duration-300">
-      <div className="flex items-center gap-2">
+    <Card className="glass-card p-3 sm:p-4 md:p-5 space-y-2 sm:space-y-3 md:space-y-4 border-2 border-white/20 shadow-colorful hover:border-white/40 transition-all duration-300">
+      <div className="flex items-center gap-1 sm:gap-2">
         <Input
           placeholder="Text box title..."
           value={title}
           onChange={(e) => onTitleChange(id, e.target.value)}
-          className="flex-1 bg-white/50 border-2 border-white/30 focus:border-primary focus:ring-2 focus:ring-primary/20"
+          className="flex-1 bg-white/50 border-2 border-white/30 focus:border-primary focus:ring-2 focus:ring-primary/20 text-xs sm:text-sm md:text-base h-8 sm:h-10"
         />
         <Button
           variant="ghost"
           size="icon"
           onClick={() => onRemove(id)}
-          className="text-destructive hover:bg-destructive/20 hover:text-destructive transition-colors"
+          className="text-destructive hover:bg-destructive/20 hover:text-destructive transition-colors h-8 w-8 sm:h-10 sm:w-10"
         >
-          <X className="h-4 w-4" />
+          <X className="h-3 w-3 sm:h-4 sm:w-4" />
         </Button>
       </div>
-      <div className="border-2 border-white/30 rounded-lg min-h-[200px] bg-white/30 backdrop-blur-sm">
+      <div className="border-2 border-white/30 rounded-lg min-h-[150px] sm:min-h-[200px] bg-white/30 backdrop-blur-sm">
         <EditorContent editor={editor} />
       </div>
     </Card>

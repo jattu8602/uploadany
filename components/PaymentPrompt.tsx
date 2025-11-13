@@ -110,33 +110,33 @@ export default function PaymentPrompt({ uploadId, onSuccess, onCancel }: Payment
   }
 
   return (
-    <Card className="glass-card p-6 space-y-4 border-2 border-white/20 shadow-colorful">
+    <Card className="glass-card p-3 sm:p-4 md:p-6 space-y-2 sm:space-y-3 md:space-y-4 border-2 border-white/20 shadow-colorful">
       <div>
-        <h3 className="text-2xl font-bold mb-2 text-gradient-primary">Unlock Lifetime Access</h3>
-        <p className="text-sm text-muted-foreground font-medium">
+        <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-1 sm:mb-2 text-gradient-primary">Unlock Lifetime Access</h3>
+        <p className="text-xs sm:text-sm text-muted-foreground font-medium">
           Pay ₹2 to access this upload permanently. One-time payment, lifetime access.
         </p>
       </div>
 
       {error && (
         <Alert variant="destructive" className="border-2 border-destructive/50">
-          <AlertDescription className="font-semibold">{error}</AlertDescription>
+          <AlertDescription className="font-semibold text-xs sm:text-sm md:text-base">{error}</AlertDescription>
         </Alert>
       )}
 
-      <div className="flex gap-3">
+      <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
         <Button
           onClick={handlePayment}
           disabled={loading}
-          className="flex-1 bg-gradient-success hover:opacity-90 text-white font-bold text-lg py-6 shadow-glow hover:shadow-colorful transition-all duration-300 disabled:opacity-50"
+          className="flex-1 bg-gradient-success hover:opacity-90 text-white font-bold text-sm sm:text-base md:text-lg py-3 sm:py-4 md:py-6 shadow-glow hover:shadow-colorful transition-all duration-300 disabled:opacity-50"
         >
           {loading ? (
             <>
-              <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-              Processing...
+              <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 mr-2 animate-spin" />
+              <span className="text-xs sm:text-sm md:text-base">Processing...</span>
             </>
           ) : (
-            'Continue'
+            <span className="text-xs sm:text-sm md:text-base">Continue</span>
           )}
         </Button>
         {onCancel && (
@@ -144,9 +144,9 @@ export default function PaymentPrompt({ uploadId, onSuccess, onCancel }: Payment
             onClick={onCancel}
             variant="outline"
             disabled={loading}
-            className="flex-1 bg-white/50 border-2 border-white/30 hover:bg-white/70 text-foreground font-bold text-lg py-6 transition-all duration-300 disabled:opacity-50"
+            className="flex-1 bg-white/50 border-2 border-white/30 hover:bg-white/70 text-foreground font-bold text-sm sm:text-base md:text-lg py-3 sm:py-4 md:py-6 transition-all duration-300 disabled:opacity-50"
           >
-            Back to Public Upload
+            <span className="text-xs sm:text-sm md:text-base">Back to Public Upload</span>
           </Button>
         )}
       </div>

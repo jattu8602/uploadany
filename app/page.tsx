@@ -50,7 +50,9 @@ export default function Home() {
   const uploadState = useAppSelector((state) => state.upload)
   const [showQR, setShowQR] = useState(false)
   const [showPayment, setShowPayment] = useState(false)
-  const [currentUploadId, setCurrentUploadIdState] = useState<string | null>(null)
+  const [currentUploadId, setCurrentUploadIdState] = useState<string | null>(
+    null
+  )
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -60,7 +62,9 @@ export default function Home() {
 
   const handleAddTextBox = () => {
     const id = nanoid()
-    dispatch(addTextBox({ id, title: `Text ${uploadState.textBoxes.length + 1}` }))
+    dispatch(
+      addTextBox({ id, title: `Text ${uploadState.textBoxes.length + 1}` })
+    )
   }
 
   const handlePrivacyChange = (value: string) => {
@@ -182,33 +186,38 @@ export default function Home() {
     !uploadState.isUploading
 
   return (
-    <div className="container mx-auto p-4 max-w-4xl space-y-8">
-      <div className="text-center space-y-4 py-8">
-        <h1 className="text-6xl pacifico-regular text-white drop-shadow-2xl">
+    <div className="container mx-auto p-2 sm:p-4 max-w-4xl space-y-4 sm:space-y-8">
+      <div className="text-center space-y-2 sm:space-y-4 py-4 sm:py-8">
+        <h1 className="text-3xl sm:text-4xl md:text-6xl pacifico-regular text-white drop-shadow-2xl">
           Upload Anytime
         </h1>
-        <p className="text-xl text-white/95 font-semibold drop-shadow-lg">
+        <p className="text-sm sm:text-base md:text-xl text-white/95 font-semibold drop-shadow-lg">
           Upload anything, share via QR code. No login required.
         </p>
       </div>
 
       {/* File Upload Zone */}
-      <Card className="glass-card p-6 shadow-colorful border-2 border-white/20">
-        <h2 className="text-2xl font-bold mb-4 text-gradient-primary">Files</h2>
+      <Card className="glass-card p-3 sm:p-4 md:p-6 shadow-colorful border-2 border-white/20">
+        <h2 className="text-lg sm:text-xl md:text-2xl font-bold mb-2 sm:mb-4 text-gradient-primary">
+          Files
+        </h2>
         <FileUploadZone />
       </Card>
 
       {/* Text Boxes */}
-      <Card className="glass-card p-6 shadow-colorful border-2 border-white/20">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-2xl font-bold text-gradient-secondary">Text Content</h2>
+      <Card className="glass-card p-3 sm:p-4 md:p-6 shadow-colorful border-2 border-white/20">
+        <div className="flex items-center justify-between mb-2 sm:mb-4 flex-wrap gap-2">
+          <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gradient-secondary">
+            Text Content
+          </h2>
           <Button
             onClick={handleAddTextBox}
-            className="bg-gradient-secondary hover:opacity-90 text-white font-semibold shadow-glow hover:shadow-colorful transition-all duration-300"
+            className="bg-gradient-secondary hover:opacity-90 text-white font-semibold shadow-glow hover:shadow-colorful transition-all duration-300 text-xs sm:text-sm"
             size="sm"
           >
-            <Plus className="h-4 w-4 mr-2" />
-            Add Text Box
+            <Plus className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+            <span className="hidden sm:inline">Add Text Box</span>
+            <span className="sm:hidden">Add</span>
           </Button>
         </div>
         <div className="space-y-4">
@@ -229,84 +238,106 @@ export default function Home() {
           ))}
           {uploadState.textBoxes.length === 0 && (
             <p className="text-sm text-muted-foreground text-center py-8">
-              No text boxes added. Click &quot;Add Text Box&quot; to get started.
+              No text boxes added. Click &quot;Add Text Box&quot; to get
+              started.
             </p>
           )}
         </div>
       </Card>
 
-        {/* Privacy Settings */}
-        <Card className="glass-card p-6 shadow-colorful border-2 border-white/20">
-          <h2 className="text-2xl font-bold mb-6 text-gradient-secondary">Privacy Settings</h2>
-          <div className="space-y-5">
-            <div>
-              <Label className="text-base font-semibold text-foreground mb-2 block">Access Control</Label>
-              <Select
-                value={uploadState.isPrivate ? 'private' : 'public'}
-                onValueChange={handlePrivacyChange}
-              >
-                <SelectTrigger className="bg-white/50 border-2 border-white/30 focus:border-primary focus:ring-2 focus:ring-primary/20 h-12 text-base">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="glass-card border-2 border-white/30 shadow-colorful">
-                  <SelectItem value="public" className="text-base py-3">Public (Anyone with QR can access)</SelectItem>
-                  <SelectItem value="private" className="text-base py-3">
-                    Private (Password protected - ₹2 required)
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            {uploadState.isPrivate && (
-              <div>
-                <Label className="text-base font-semibold text-foreground mb-2 block">Password</Label>
-                <Input
-                  type="password"
-                  placeholder="Enter password"
-                  value={uploadState.password}
-                  onChange={(e) =>
-                    dispatch(setPrivacy({ isPrivate: true, password: e.target.value }))
-                  }
-                  className="bg-white/50 border-2 border-white/30 focus:border-primary focus:ring-2 focus:ring-primary/20 h-12 text-base"
-                />
-              </div>
-            )}
-
-            {/* Lifetime Access Toggle */}
-            <div className="pt-4 border-t-2 border-white/20">
-              <div className="flex items-center justify-between gap-4">
-                <div className="flex-1">
-                  <Label className="text-base font-semibold text-foreground mb-2 block">
-                    Lifetime Access
-                  </Label>
-                  <p className="text-sm text-muted-foreground font-medium">
-                    Make this file publicly available lifetime in just 2 rupees pay now and get unlimited download access
-                  </p>
-                </div>
-                <Button
-                  onClick={() => {
-                    const newValue = !uploadState.wantsLifetimeAccess
-                    dispatch(setWantsLifetimeAccess(newValue))
-                    // Payment will be shown after upload completes
-                  }}
-                  className={`flex-shrink-0 ${
-                    uploadState.wantsLifetimeAccess
-                      ? 'bg-gradient-success hover:opacity-90 text-white'
-                      : 'bg-white/50 border-2 border-white/30 hover:bg-white/70 text-foreground'
-                  } font-semibold shadow-glow transition-all duration-300`}
-                  variant={uploadState.wantsLifetimeAccess ? 'default' : 'outline'}
+      {/* Privacy Settings */}
+      <Card className="glass-card p-3 sm:p-4 md:p-6 shadow-colorful border-2 border-white/20">
+        <h2 className="text-lg sm:text-xl md:text-2xl font-bold mb-3 sm:mb-6 text-gradient-secondary">
+          Privacy Settings
+        </h2>
+        <div className="space-y-3 sm:space-y-5">
+          <div>
+            <Label className="text-xs sm:text-sm md:text-base font-semibold text-foreground mb-1 sm:mb-2 block">
+              Access Control
+            </Label>
+            <Select
+              value={uploadState.isPrivate ? 'private' : 'public'}
+              onValueChange={handlePrivacyChange}
+            >
+              <SelectTrigger className="bg-white/50 border-2 border-white/30 focus:border-primary focus:ring-2 focus:ring-primary/20 h-10 sm:h-12 text-xs sm:text-sm md:text-base">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="glass-card border-2 border-white/30 shadow-colorful">
+                <SelectItem
+                  value="public"
+                  className="text-xs sm:text-sm md:text-base py-2 sm:py-3"
                 >
-                  <Infinity className="h-4 w-4 mr-2" />
-                  {uploadState.wantsLifetimeAccess ? 'Enabled' : 'Enable'}
-                </Button>
+                  Public (Anyone with QR can access)
+                </SelectItem>
+                <SelectItem
+                  value="private"
+                  className="text-xs sm:text-sm md:text-base py-2 sm:py-3"
+                >
+                  Private (Password protected - ₹2 required)
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          {uploadState.isPrivate && (
+            <div>
+              <Label className="text-xs sm:text-sm md:text-base font-semibold text-foreground mb-1 sm:mb-2 block">
+                Password
+              </Label>
+              <Input
+                type="password"
+                placeholder="Enter password"
+                value={uploadState.password}
+                onChange={(e) =>
+                  dispatch(
+                    setPrivacy({ isPrivate: true, password: e.target.value })
+                  )
+                }
+                className="bg-white/50 border-2 border-white/30 focus:border-primary focus:ring-2 focus:ring-primary/20 h-10 sm:h-12 text-xs sm:text-sm md:text-base"
+              />
+            </div>
+          )}
+
+          {/* Lifetime Access Toggle */}
+          <div className="pt-3 sm:pt-4 border-t-2 border-white/20">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+              <div className="flex-1">
+                <Label className="text-xs sm:text-sm md:text-base font-semibold text-foreground mb-1 sm:mb-2 block">
+                  Lifetime Access
+                </Label>
+                <p className="text-xs sm:text-sm text-muted-foreground font-medium">
+                  Make this file publicly available lifetime in just 2 rupees
+                  pay now and get unlimited download access
+                </p>
               </div>
+              <Button
+                onClick={() => {
+                  const newValue = !uploadState.wantsLifetimeAccess
+                  dispatch(setWantsLifetimeAccess(newValue))
+                  // Payment will be shown after upload completes
+                }}
+                className={`flex-shrink-0 text-xs sm:text-sm ${
+                  uploadState.wantsLifetimeAccess
+                    ? 'bg-gradient-success hover:opacity-90 text-white'
+                    : 'bg-white/50 border-2 border-white/30 hover:bg-white/70 text-foreground'
+                } font-semibold shadow-glow transition-all duration-300`}
+                variant={
+                  uploadState.wantsLifetimeAccess ? 'default' : 'outline'
+                }
+              >
+                <Infinity className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                {uploadState.wantsLifetimeAccess ? 'Enabled' : 'Enable'}
+              </Button>
             </div>
           </div>
-        </Card>
+        </div>
+      </Card>
 
       {/* CAPTCHA */}
       {(uploadState.files.length > 0 || uploadState.textBoxes.length > 0) && (
-        <Card className="glass-card p-6 shadow-colorful border-2 border-white/20">
-          <h2 className="text-2xl font-bold mb-4 text-gradient-accent">Verification</h2>
+        <Card className="glass-card p-3 sm:p-4 md:p-6 shadow-colorful border-2 border-white/20">
+          <h2 className="text-lg sm:text-xl md:text-2xl font-bold mb-2 sm:mb-4 text-gradient-accent">
+            Verification
+          </h2>
           <Captcha
             onVerify={handleCaptchaVerify}
             verified={uploadState.captchaVerified}
@@ -321,15 +352,19 @@ export default function Home() {
           onClick={handleUpload}
           disabled={!canUpload}
           size="lg"
-          className="w-full max-w-md bg-gradient-primary hover:opacity-90 text-white font-bold text-lg py-6 shadow-glow hover:shadow-colorful transition-all duration-300 disabled:opacity-50"
+          className="w-full max-w-md bg-gradient-primary hover:opacity-90 text-white font-bold text-sm sm:text-base md:text-lg py-4 sm:py-5 md:py-6 shadow-glow hover:shadow-colorful transition-all duration-300 disabled:opacity-50"
         >
           {uploadState.isUploading ? (
             <>
-              <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-              Uploading...
+              <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 mr-2 animate-spin" />
+              <span className="text-xs sm:text-sm md:text-base">
+                Uploading...
+              </span>
             </>
           ) : (
-            'Upload & Generate QR Code'
+            <span className="text-xs sm:text-sm md:text-base">
+              Upload & Generate QR Code
+            </span>
           )}
         </Button>
       </div>
@@ -341,23 +376,27 @@ export default function Home() {
       )}
 
       {/* Upload History */}
-      <Card className="glass-card p-6 shadow-colorful border-2 border-white/20">
+      <Card className="glass-card p-3 sm:p-4 md:p-6 shadow-colorful border-2 border-white/20">
         <UploadHistory />
       </Card>
 
       {/* QR Code Dialog */}
       <Dialog open={showQR} onOpenChange={setShowQR}>
-        <DialogContent className="max-w-md glass-card border-2 border-white/30 shadow-colorful">
+        <DialogContent className="max-w-[95vw] sm:max-w-md glass-card border-2 border-white/30 shadow-colorful p-3 sm:p-6">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold text-gradient-primary">Upload Complete!</DialogTitle>
-            <DialogDescription className="text-base font-medium text-foreground/80">
+            <DialogTitle className="text-lg sm:text-xl md:text-2xl font-bold text-gradient-primary">
+              Upload Complete!
+            </DialogTitle>
+            <DialogDescription className="text-xs sm:text-sm md:text-base font-medium text-foreground/80">
               Scan this QR code to access your upload
             </DialogDescription>
           </DialogHeader>
           {currentUploadId && (
             <div className="space-y-6">
               <QRCode
-                url={`${process.env.NEXT_PUBLIC_APP_URL || window.location.origin}/view/${currentUploadId}`}
+                url={`${
+                  process.env.NEXT_PUBLIC_APP_URL || window.location.origin
+                }/view/${currentUploadId}`}
                 uploadId={currentUploadId}
               />
               {uploadState.isPrivate && (
@@ -370,7 +409,7 @@ export default function Home() {
               )}
               <Button
                 onClick={handleCloseQR}
-                className="w-full bg-gradient-primary hover:opacity-90 text-white font-bold text-lg py-6 shadow-glow hover:shadow-colorful transition-all duration-300"
+                className="w-full bg-gradient-primary hover:opacity-90 text-white font-bold text-sm sm:text-base md:text-lg py-4 sm:py-5 md:py-6 shadow-glow hover:shadow-colorful transition-all duration-300"
               >
                 Done
               </Button>
@@ -381,12 +420,14 @@ export default function Home() {
 
       {/* Payment Dialog */}
       <Dialog open={showPayment} onOpenChange={setShowPayment}>
-        <DialogContent className="glass-card border-2 border-white/30 shadow-colorful">
+        <DialogContent className="glass-card border-2 border-white/30 shadow-colorful p-3 sm:p-6 max-w-[95vw] sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold text-gradient-secondary">
-              {uploadState.wantsLifetimeAccess ? 'Lifetime Access Payment' : 'Payment Required'}
+            <DialogTitle className="text-lg sm:text-xl md:text-2xl font-bold text-gradient-secondary">
+              {uploadState.wantsLifetimeAccess
+                ? 'Lifetime Access Payment'
+                : 'Payment Required'}
             </DialogTitle>
-            <DialogDescription className="text-base font-medium text-foreground/80">
+            <DialogDescription className="text-xs sm:text-sm md:text-base font-medium text-foreground/80">
               {uploadState.wantsLifetimeAccess
                 ? 'Pay ₹2 to make this upload publicly available for lifetime with unlimited download access'
                 : 'Private uploads require a one-time payment of ₹2'}
@@ -411,18 +452,18 @@ export default function Home() {
               />
             ) : (
               <div className="space-y-4">
-                <p className="text-sm text-muted-foreground font-medium">
+                <p className="text-xs sm:text-sm text-muted-foreground font-medium">
                   {uploadState.wantsLifetimeAccess
                     ? 'Make this file publicly available lifetime in just 2 rupees pay now and get unlimited download access. Payment will be processed after upload completes.'
                     : 'To make your upload private and password-protected, you need to pay ₹2. This is a one-time payment for lifetime access.'}
                 </p>
-                <div className="flex gap-3">
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                   <Button
                     onClick={() => {
                       setShowPayment(false)
                       // User can continue - payment will be handled after upload
                     }}
-                    className="flex-1 bg-gradient-primary hover:opacity-90 text-white font-bold text-lg py-6 shadow-glow hover:shadow-colorful transition-all duration-300"
+                    className="flex-1 bg-gradient-primary hover:opacity-90 text-white font-bold text-sm sm:text-base md:text-lg py-4 sm:py-5 md:py-6 shadow-glow hover:shadow-colorful transition-all duration-300"
                   >
                     Continue
                   </Button>
@@ -436,7 +477,7 @@ export default function Home() {
                       setShowPayment(false)
                     }}
                     variant="outline"
-                    className="flex-1 bg-white/50 border-2 border-white/30 hover:bg-white/70 text-foreground font-bold text-lg py-6 transition-all duration-300"
+                    className="flex-1 bg-white/50 border-2 border-white/30 hover:bg-white/70 text-foreground font-bold text-sm sm:text-base md:text-lg py-4 sm:py-5 md:py-6 transition-all duration-300"
                   >
                     Cancel
                   </Button>

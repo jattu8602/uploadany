@@ -66,37 +66,37 @@ export const metadata: Metadata = {
 
 export default function TermsAndConditionsPage() {
   return (
-    <div className="container mx-auto max-w-3xl px-4 py-16">
-      <header className="space-y-4 text-center md:text-left">
-        <p className="text-sm font-semibold uppercase tracking-wider text-white/80">
+    <div className="container mx-auto max-w-3xl px-2 sm:px-4 py-8 sm:py-12 md:py-16">
+      <header className="space-y-2 sm:space-y-3 md:space-y-4 text-center md:text-left">
+        <p className="text-xs sm:text-sm font-semibold uppercase tracking-wider text-white/80">
           Terms & Conditions
         </p>
-        <h1 className="text-4xl font-bold text-white drop-shadow-lg md:text-5xl">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white drop-shadow-lg">
           Know your responsibilities while using Upload Anytime.
         </h1>
-        <p className="text-base text-white/80 md:text-lg">
+        <p className="text-sm sm:text-base md:text-lg text-white/80">
           These terms outline how Upload Anytime operates, what you can expect
           from us, and how to keep your account secure and compliant.
         </p>
       </header>
 
-      <div className="mt-10 space-y-6">
+      <div className="mt-6 sm:mt-8 md:mt-10 space-y-3 sm:space-y-4 md:space-y-6">
         {sections.map((section) => (
           <section
             key={section.title}
-            className="glass-card rounded-2xl border border-white/20 p-6 shadow-colorful"
+            className="glass-card rounded-2xl border border-white/20 p-3 sm:p-4 md:p-6 shadow-colorful"
           >
-            <h2 className="text-xl font-semibold text-black md:text-2xl">
+            <h2 className="text-base sm:text-lg md:text-xl lg:text-2xl font-semibold text-black">
               {section.title}
             </h2>
-            <p className="mt-3 text-sm leading-relaxed text-black md:text-base">
+            <p className="mt-2 sm:mt-3 text-xs sm:text-sm md:text-base leading-relaxed text-black">
               {section.description}
             </p>
             {section.bullets && (
-              <ul className="mt-4 space-y-2 text-sm text-black md:text-base">
+              <ul className="mt-3 sm:mt-4 space-y-1.5 sm:space-y-2 text-xs sm:text-sm md:text-base text-black">
                 {section.bullets.map((bullet) => (
-                  <li key={bullet} className="flex gap-2">
-                    <span className="mt-1 h-2 w-2 flex-shrink-0 rounded-full bg-black" />
+                  <li key={bullet} className="flex gap-1.5 sm:gap-2">
+                    <span className="mt-1 h-1.5 w-1.5 sm:h-2 sm:w-2 flex-shrink-0 rounded-full bg-black" />
                     <span>{bullet}</span>
                   </li>
                 ))}
@@ -106,38 +106,40 @@ export default function TermsAndConditionsPage() {
         ))}
       </div>
 
-      <div className="mt-12 glass-card rounded-2xl border border-white/20 p-6 shadow-colorful">
-        <h2 className="text-lg font-semibold text-black md:text-xl">
+      <div className="mt-6 sm:mt-8 md:mt-12 glass-card rounded-2xl border border-white/20 p-3 sm:p-4 md:p-6 shadow-colorful">
+        <h2 className="text-base sm:text-lg md:text-xl font-semibold text-black">
           Questions or clarifications?
         </h2>
-        <p className="mt-3 text-sm text-black md:text-base">
+        <p className="mt-2 sm:mt-3 text-xs sm:text-sm md:text-base text-black">
           We are here to help. If you need clarity on these terms, or if you
           believe someone is misusing the platform, let us know right away.
         </p>
-        <div className="mt-4 flex flex-col gap-4 text-sm text-black md:flex-row md:text-base">
+        <div className="mt-3 sm:mt-4 flex flex-col gap-2 sm:gap-3 md:gap-4 text-xs sm:text-sm md:text-base text-black md:flex-row">
           <a
             href="tel:+918602074069"
-            className="rounded-xl border border-white/20 bg-white/10 px-4 py-3 transition hover:border-white/40"
+            className="rounded-xl border border-white/20 bg-white/10 px-3 sm:px-4 py-2 sm:py-3 transition hover:border-white/40 text-xs sm:text-sm md:text-base"
           >
             Call us: +91 8602074069
           </a>
-          <div className="space-y-1 rounded-xl border border-white/20 bg-white/10 px-4 py-3">
-            <p className="font-medium text-black">Email support</p>
+          <div className="space-y-1 rounded-xl border border-white/20 bg-white/10 px-3 sm:px-4 py-2 sm:py-3">
+            <p className="font-medium text-black text-xs sm:text-sm md:text-base">
+              Email support
+            </p>
             <a
               href="mailto:chaurasiyajatin68@gmail.com"
-              className="block break-all text-black transition hover:text-gray-700"
+              className="block break-all text-black transition hover:text-gray-700 text-xs sm:text-sm"
             >
               chaurasiyajatin68@gmail.com
             </a>
             <a
               href="mailto:chaurasiyanitesh68@gmail.com"
-              className="block break-all text-black transition hover:text-gray-700"
+              className="block break-all text-black transition hover:text-gray-700 text-xs sm:text-sm"
             >
               chaurasiyanitesh68@gmail.com
             </a>
           </div>
         </div>
-        <p className="mt-6 text-xs text-black">
+        <p className="mt-4 sm:mt-6 text-xs text-black">
           For policy-specific questions, you can also review our{' '}
           <Link
             href="/shipping-policy"
